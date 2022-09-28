@@ -1,0 +1,104 @@
+{% extends "main/base.html" %}
+{% block title %}Select Tests{% endblock %}
+
+{% block content %}
+<br>
+
+{% if lab == True %}
+<div>
+    <h3>Lab Tests</h3><br>
+{% for t in labTests %}
+<div class="custom-control custom-checkbox custom-control-inline col-1">
+    <input type="checkbox" class="custom-control-input" id={{t}}>
+    <label class="custom-control-label" for={{t}}>{{t}}</label>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+
+{% if rad == True %}
+<div>
+    <br><h3>Radiology Tests</h3><br>
+{% for t in radioTests %}
+<div class="custom-control custom-checkbox custom-control-inline col-1">
+    <input type="checkbox" class="custom-control-input" id={{t}}>
+    <label class="custom-control-label" for={{t}}>{{t}}</label>
+</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<!-- Button trigger modal -->
+<br> 
+<button type="button" class="btn btn-primary" onclick="clicked()" data-toggle="modal" data-target="#exampleModalLong">
+    Save
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Summary</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            Selected Tests:
+          <ul id = "modal-summary"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick = "submitClick()">Add Tests</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+    var listArray = [];
+    var checkboxes = document.querySelectorAll('.custom-control-input');
+
+    for (var checkbox of checkboxes){
+        checkbox.addEventListener('click',function(){
+            if(this.checked == true){
+                listArray.push(this.id);
+            }else{
+                listArray = listArray.filter(x => x != this.id)
+            }
+        })
+    }
+    console.log(listArray);
+
+    function clicked(){
+        var text = "";
+        if(listArray.length > 0){
+          listArray = listArray.sort();
+          for (var i=0;i<listArray.length;i++) {
+              text += "<li>" + listArray[i] + "</li>";
+          }
+        }
+        else{
+          text = "No tests selected !";
+        }
+        
+        var sum = document.getElementById("modal-summary");
+        sum.innerHTML = text;
+    }
+
+    function submitClick(){
+      if(listArray.length != 0){
+        console.log("Pressed submit");
+        console.log(listArray);
+      }
+      else{
+        console.log("No tests selected!");
+      }
+      
+    }
+
+</script>
+
+{% endblock %}

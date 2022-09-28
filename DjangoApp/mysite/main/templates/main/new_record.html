@@ -1,0 +1,37 @@
+{% extends "main/base.html" %}
+{% block title %}New Record{% endblock %}
+
+{% block content %}
+<h3 align = "center">Create a new Record</h3>
+
+<div>
+<form action="/new_record/{{id}}" method="POST">
+    {% csrf_token %}
+    <div class="form-group col-1">
+        <label for = "name">Reason</label>
+        {{form.reason}}
+    </div>
+    <div class="form-group col-1">
+        <label for = "age">Description</label>
+        {{form.description}}
+    </div>
+    <div class="form-group col-1">
+        <label for = "age">Tests:</label>
+    </div>
+    <div class = "form-group col-1">
+        <label>Lab {{form.lab}} Radiology {{form.radiology}}</label>    
+    </div>
+    <div class="form-group col-1">
+        <label for = "age">Diagnosis</label>
+        {{form.diagnosis}}
+    </div>
+    <div class="form-group col-1">
+        <label for = "age">Notes</label>
+        {{form.notes}}
+    </div>
+    <button class="btn btn-primary" type = "submit" name = "save">Create</button>
+</form>
+</div>
+
+
+{% endblock %}

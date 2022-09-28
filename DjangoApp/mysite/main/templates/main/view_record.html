@@ -1,0 +1,58 @@
+{% extends "main/base.html" %}
+{% block title %}View Record{% endblock %}
+
+{% block content %}
+<br>
+
+<div align="center">
+<h3>
+    View Appointment
+</h3><br>
+<table class="table table-hover col-8">
+    <thead>
+      <tr>
+        <th scope="col">Title</th>
+        <th scope="col">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for parameter,value in attr.items %}
+    {% if parameter != "tests" %}
+      <tr>
+        <th scope="row">{{parameter.title}}</th>
+        <td>{{value}}</td>
+      </tr>
+    {% endif %}
+    {% endfor %}
+      <tr>
+        <th scope="row">Tests</th>
+        <td>
+
+        <div>
+          {% if n_lab == 0 %}
+          No lab test conducted!
+          {% else %}
+          # of lab tests: {{n_lab}}   <a href = "/">See tests</a>
+          {% endif %}
+        </div>
+
+        <div>
+          {% if n_radio == 0 %}
+          No radiology test conducted!
+          {% else %}
+          # of radiology tests: {{n_radio}}   <a href = "/">See tests</a>
+          {% endif %}
+        </div>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<div>
+
+<div align = "left">
+    <a href="/delete_record/{{rec_id}}" aria-pressed="true" class="btn btn-danger btn-lg active" role="button"
+     aria-pressed="true">Delete record</a>
+  </div>
+
+{% endblock %}

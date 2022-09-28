@@ -1,0 +1,43 @@
+{% extends "main/base.html" %}
+
+{% block title %}Home{% endblock %}
+{% block content %}
+<br>
+<div class = "col-lg-12" align = "center">
+    <h3>{{patient.name}} <a href = "/">EDIT</a> </h3>
+    <br>
+    <table class="table table-hover col-8">
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for parameter,value in p_attr.items %}
+        <tr>
+          <th scope="row">{{parameter.title}}</th>
+          <td>{{value}}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+</div>
+
+<div class = "col-rg-2">
+  {% for record in records %}
+        <div class="card col-8">
+          <div class="card-header" align = "center">
+            <a href = "/view_record/{{record.id}}">{{record.date}} ({{record.reason}})</a>
+          </div>
+        </div><br>
+    {% endfor %}
+    <br>
+</div>
+
+<div align = "center">
+  <a href="/new_record/{{patient.id}}" aria-pressed="true" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Create new record</a>
+</div>
+
+{% endblock %}

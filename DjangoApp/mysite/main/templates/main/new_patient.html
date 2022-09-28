@@ -1,0 +1,66 @@
+{% extends "main/base.html" %}
+
+{% block title %}New Patient{% endblock %}
+
+{% block content %}
+
+<form action="/new_patient/" method="POST">
+    {% csrf_token %}
+    <h3 align = "center">Create a new Patient</h3>
+
+    <div class="form-group">
+        <label for = "name" class="col-1"> Full Name</label>
+        {{form.name}}
+    </div>
+    
+    <div class="form-group">
+        <label for = "age" class="col-1">Age</label>
+        {{form.age}}
+    </div>
+    
+    <div class="form-group">
+        <label for = "gender" class="col-1">Gender</label>
+        {{form.gender}}
+    </div>
+
+    <div class="form-group">
+        <label for = "habits" class="col-1">Habits</label>
+        {{form.habits}}
+    </div>
+
+    <div class="form-group">
+        <label for = "medicines" class="col-1">Medicines</label>
+        {{form.medicines}}
+    </div>
+
+    <div class="form-group">
+        <label for = "allergies" class="col-1">Allergies</label>
+        {{form.allergies}}
+    </div>
+
+    <div class="form-group">
+        <label for = "allergies" class="col-1">Blood Group (Optional)</label>
+        {{form.blood}}
+    </div>
+
+    <div class="form-group">
+        <label for = "history" class="col-1">History</label>
+        {{form.history}}
+    </div>
+
+    <button class="btn btn-primary" type = "submit" name = "save">Create</button>
+    
+    <br><br>
+    {% if type == "error" %}
+    <div class="alert alert-danger" role="alert">
+        There is another patient with the same name.
+    </div>
+    {% elif type == "success" %}
+    <div class="alert alert-success" role="alert">
+        Successfully created the patient
+      </div>
+    {% endif %}
+
+</form>
+
+{% endblock %}
