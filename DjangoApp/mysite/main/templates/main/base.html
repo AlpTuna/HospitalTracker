@@ -25,9 +25,9 @@
 
               </ul>
               
-              <form class="form-inline my-2 my-lg-0" action="/all_patients/alp" method="GET">
+              <form class="form-inline my-2 my-lg-0" action="javascript:getInput()">
                 <input id = "searchBar" class="form-control mr-sm-2" type="search" placeholder="Search a patient" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" onlick = "getInput()" type="submit">Search</button>
+                <button class="btn btn-outline-success my-2 my-sm-0">Search</button>
               </form>
 
             </div>
@@ -41,7 +41,7 @@
           function getInput(){ 
             var inputTextValue = "";
             inputTextValue = document.getElementById("searchBar").value;
-            console.log(inputTextValue);
+            window.location.href = "/all_patients/" + inputTextValue;
         }
         </script>
 

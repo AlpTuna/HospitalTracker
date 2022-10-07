@@ -51,15 +51,18 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick = "submitClick()">Add Tests</button>
+          <button type="button" class="btn btn-primary" vals = {{vals}} id = "submit-id-submit" onclick="submitClick()">Add Tests</button>
         </div>
       </div>
     </div>
   </div>
 
+
 <script>
     var listArray = [];
     var checkboxes = document.querySelectorAll('.custom-control-input');
+
+    
 
     for (var checkbox of checkboxes){
         checkbox.addEventListener('click',function(){
@@ -70,7 +73,6 @@
             }
         })
     }
-    console.log(listArray);
 
     function clicked(){
         var text = "";
@@ -92,12 +94,16 @@
       if(listArray.length != 0){
         console.log("Pressed submit");
         console.log(listArray);
+        console.log(document.getElementById("submit-id-submit").vals)
       }
       else{
         console.log("No tests selected!");
       }
       
     }
+
+
+    
 
 </script>
 

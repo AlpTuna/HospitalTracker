@@ -6,7 +6,7 @@ from django.http import HttpResponse,HttpResponseRedirect
 from .models import Patient,Record
 from .forms import CreatePatient,CreateTests,SelectTests,CreateRecord
 import datetime
-from .scripts import checkIfUserAvailable,getLastRecord,saveRecord
+from .scripts import checkIfUserAvailable,getLastRecord,saveRecord,orderPatients
 
 #allTests = sorted(["Heart Rate","Glucose","HDL","LDL","Temperature","Diastole","Systole","Triglycerides"])
 allTests = {"radio":["Ultrasound","X-Ray","CT Scan","MRI Scan","PET Scan"],"lab":["HDL","LDL","Triglycerides","Glucose"]}
@@ -52,16 +52,21 @@ def newRecord(response,id):
                 return redirect(f"/home/{id}")
             else:
                 return render(response,"main/select_tests.html",{"rad":values["radiology"],"lab":values["lab"],
-                "labTests":allTests["lab"],"radioTests":allTests["radio"]})
+                "labTests":allTests["lab"],"radioTests":allTests["radio"],"vals":values})
     else:
         form = CreateRecord()
         return render(response,"main/new_record.html",{"form":form,"id":id})
 
+def mytestview(request,query):
+    print(request.GET['var'])
+    return 
+
 def allPatients(response):
-    allPatients = Patient.objects.all()[::-1]
+    allPatients = Patient.objects.all()[::-1] # Retrieve all the patients (in reverse order)
+    allPatients = orderPatients(allPatients) # Sort the patients by their last appointment date
     lastRecords = [getLastRecord(x.id) for x in allPatients]
-    #timeDifferences = [datetime.datetime.now().date() - x.date for x in lastRecords]
     allVals = zip(allPatients,lastRecords)
+    orderPatients(allPatients)
     return render(response,"main/allPatients.html",{"patients":allVals})
 
 
