@@ -9,9 +9,15 @@ def checkIfUserAvailable(name):
 def getLastRecord(id):
     return Patient.objects.get(id=id).record_set.last() 
 
-def saveRecord(values,patient,id):
-    new_rec = Record(reason = values["reason"],date = datetime.datetime.now(), patient = Patient.objects.get(id=id),
+def saveRecord(values,id):
+    patient = Patient.objects.get(id = id)
+    new_rec = Record(reason = values["reason"],date = datetime.datetime.now(), patient = patient,
     tests = {"radiology":{},"lab":{}}, description = values["description"],diagnosis = values["diagnosis"],notes = values["notes"])
+    for x in values["radioTests"]:
+        new_rec.tests["radiology"][x] = "Not Set!"
+    for x in values["labTests"]:
+        new_rec.tests["lab"][x] = "Not Set!"
+
     new_rec.save()
     patient.record_set.add(new_rec)
     return new_rec

@@ -3,6 +3,7 @@
 
 {% block content %}
 <br>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 
 {% if lab == True %}
 <div>
@@ -51,7 +52,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" vals = {{vals}} id = "submit-id-submit" onclick="submitClick()">Add Tests</button>
+          <button type="button" class="btn btn-primary" vals = {{vals}} id = "submit-id-submit">Add Tests</button>
         </div>
       </div>
     </div>
@@ -61,8 +62,6 @@
 <script>
     var listArray = [];
     var checkboxes = document.querySelectorAll('.custom-control-input');
-
-    
 
     for (var checkbox of checkboxes){
         checkbox.addEventListener('click',function(){
@@ -85,26 +84,40 @@
         else{
           text = "No tests selected !";
         }
-        
         var sum = document.getElementById("modal-summary");
         sum.innerHTML = text;
+        JSON.stringify("{{vals}}").replace(/&quot;/ig,'"');
+        console.log(JSON.stringify("{{vals}}").replace(/&quot;/ig,'"'));
     }
+
+    $(document).ready(function(){
+      $('#submit-id-submit').click(function(){
+        $.ajax({
+        url: '/my-test/',
+        type: 'POST',
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}',id: '{{id}}' , patient: '{{patient}}',
+          tests : JSON.stringify(listArray),values: (JSON.stringify("{{vals}}")).replace(/&quot;/ig,'"')},
+        success: function(data) {
+            alert("Created the record!");
+
+        },
+        failure: function(data) { 
+            alert("Error");
+      }
+        }); 
+      });
+    });
 
     function submitClick(){
       if(listArray.length != 0){
         console.log("Pressed submit");
         console.log(listArray);
-        console.log(document.getElementById("submit-id-submit").vals)
       }
       else{
         console.log("No tests selected!");
       }
       
     }
-
-
-    
-
 </script>
 
 {% endblock %}
