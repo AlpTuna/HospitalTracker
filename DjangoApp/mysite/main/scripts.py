@@ -1,4 +1,5 @@
 from .models import Patient,Record
+from django import forms
 import datetime
 
 def checkIfUserAvailable(name):
@@ -12,15 +13,38 @@ def getLastRecord(id):
 def saveRecord(values,id):
     patient = Patient.objects.get(id = id)
     new_rec = Record(reason = values["reason"],date = datetime.datetime.now(), patient = patient,
-    tests = {"radiology":{},"lab":{}}, description = values["description"],diagnosis = values["diagnosis"],notes = values["notes"])
+    tests = {"radiology":{"verified":False},"lab":{"verified":False}}, description = values["description"],diagnosis = values["diagnosis"],notes = values["notes"])
     for x in values["radioTests"]:
         new_rec.tests["radiology"][x] = "Not Set!"
     for x in values["labTests"]:
         new_rec.tests["lab"][x] = "Not Set!"
+    if len(values["labTests"]) == 0 and len(values["radioTests"] == 0):
+        new_rec.verified = True
+    else:
+        new_rec.verified = False
 
     new_rec.save()
     patient.record_set.add(new_rec)
     return new_rec
+
+def CreateInsertTestForm(testsArray,allTests):
+    field = {}
+    for test in testsArray:
+        testType = allTests[test]
+        if testType == "int":
+            field[test] = forms.IntegerField()
+        elif testType == "file":
+            field[test] = forms.FileField()
+    return type("tests",(forms.BaseForm,),{"base_fields":field})
+
+def UpdateTests(rec_id,type,values):
+    record = Record.objects.get(id=rec_id)
+    for x in values:
+        record.tests[type][x] = values[x]
+    record.tests[type]["verified"] = True
+    record.save()
+    print(record.tests)
+    
 
 def orderPatients(all):
 # This function uses the selection sort which has a O(n^2) complexity.I'll keep this during the development stage, however I can

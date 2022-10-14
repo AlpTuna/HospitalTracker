@@ -1,4 +1,3 @@
-from email.policy import default
 from django.db import models
 
 # Create your models here.
@@ -23,9 +22,9 @@ class Record(models.Model):
     patient = models.ForeignKey(Patient , on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     reason = models.CharField(max_length=100)
+    verified = models.BooleanField(default=False)
     description = models.CharField(max_length=3000, default="Not set")
-    #tests = models.JSONField(default = {"BPM":"Not Calculated"})
-    tests = models.JSONField(default={"radiology":{},"lab":{}})
+    tests = models.JSONField(default={"radiology":{"verified":False},"lab":{"verified":False}})
     diagnosis = models.CharField(max_length = 3000, default = "Not set")
     notes = models.CharField(max_length = 3000, default = "Not set")
 

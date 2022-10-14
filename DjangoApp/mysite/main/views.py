@@ -1,18 +1,17 @@
-from ast import Param
-from urllib import request
 import json
-from xml.dom.minidom import Document
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,HttpResponseRedirect
-from matplotlib import test
 from .models import Patient,Record
 from .forms import CreatePatient,CreateTests,SelectTests,CreateRecord
-import datetime
-from .scripts import checkIfUserAvailable,getLastRecord,saveRecord,orderPatients
+from .scripts import checkIfUserAvailable,getLastRecord,saveRecord,orderPatients,CreateInsertTestForm,UpdateTests
 
-#allTests = sorted(["Heart Rate","Glucose","HDL","LDL","Temperature","Diastole","Systole","Triglycerides"])
-allTests = {"radio":["Ultrasound","X-Ray","CT","MRI","PET"],"lab":["HDL","LDL","Triglycerides","Glucose"]}
+# allTests is an array that stores all types of tests in arrays. In each array the first element is the name of the test and
+# second element is the type of value it gets.
+allTests = {"radiology":{"Ultrasound":"file","X-Ray":"file","CT":"file","MRI":"file","PET":"file"},
+            "lab":{"HDL":"int","LDL":"int","Triglycerides":"int","Glucose":"int"}}
 
+labTests = list(allTests["lab"].keys()) # All lab tests in array (without their value type)
+radioTests = list(allTests["radiology"].keys()) # All radiology tests in array (without their value type)
 
 def index(response):
     return render(response,"main/index.html")
@@ -53,7 +52,7 @@ def newRecord(response,id):
                 return redirect(f"/home/{id}")
             else:
                 return render(response,"main/select_tests.html",{"rad":values["radiology"],"lab":values["lab"],
-                "labTests":allTests["lab"],"radioTests":allTests["radio"],"id":id,"patient":Patient.objects.get(id = id),
+                "labTests":labTests,"radioTests":radioTests,"id":id,"patient":Patient.objects.get(id = id),
                 "vals":json.dumps(values)})
     else:
         form = CreateRecord()
@@ -67,13 +66,12 @@ def mytestview(response):
     allVals["radioTests"] = []
     allVals["labTests"] = []
     for test in tests:
-        if test in allTests["radio"]:
+        if test in radioTests:
             allVals["radioTests"].append(test)
-        elif test in allTests["lab"]:
+        elif test in labTests:
             allVals["labTests"].append(test)
         else:
             print("Unknown test!")
-    print(allVals)
     id = response.POST.get("id")
     saveRecord(allVals,id)
     return redirect(f"/home/{id}")
@@ -98,9 +96,32 @@ def filterPatients(response,name):
 def viewRecord(response,id):
     record = Record.objects.get(id = id)
     record_attr = record.get_attr()
-    n_lab = len(record.tests["lab"])
-    n_radio = len(record.tests["radiology"])
-    return render(response,"main/view_record.html",{"rec_id":id,"n_lab":n_lab,"n_radio":n_radio,"tests": record.tests, "attr": record_attr})
+    n_lab = len(record.tests["lab"])-1 # We have -1 because of the element 'verified' in the dict. 
+    n_radio = len(record.tests["radiology"])-1 
+    return render(response,"main/view_record.html",{"rec_id":id,"n_lab":n_lab,"n_radio":n_radio,"tests": record.tests,
+                "attr": record_attr,"lab_verified":record.tests["lab"]["verified"],
+                "radio_verified":record.tests["radiology"]["verified"]})
+
+def InsertTestResults(response,id,type):
+    if response.method == "GET":
+        print(type)
+        record = Record.objects.get(id = id)
+        print(record.tests)
+        tests = [x for x in record.tests[type] if x != "verified"]
+        form = CreateInsertTestForm(tests,allTests[type])
+        return render(response,"main/insert_tests.html",{"rec_id":id,"type":type,"form":form})
+    if response.method == "POST":
+        values = response.POST.dict()
+        values.pop('csrfmiddlewaretoken')
+        values.pop('save-btn') #We dont need the CSRF and the button (name='save-btn') when assigning values
+        print(values)
+        UpdateTests(id,type,values)
+        return render(response,"main/index.html")
+
+def viewTestResults(response,id,type):
+    record = Record.objects.get(id = id)
+    tests = {x:record.tests[type][x] for x in record.tests[type] if x != "verified"}#Get the tests (in dict.) excluding 'verified'
+    return render(response,"main/view_tests.html",{"tests":tests})
 
 def deleteRecord(response,id):
     record = Record.objects.get(id = id)

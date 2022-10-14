@@ -1,0 +1,22 @@
+{% extends "main/base.html" %}
+{% block title %}Insert Values{% endblock %}
+
+{% block content %}
+<br>
+<h1 class = "container">Insert the Values</h1>
+
+<form action="/insert_tests/{{type}}/{{rec_id}}" method="POST">
+    {% csrf_token %}
+    <div class = "container">
+        {% for item in form %}
+            <h3>{{item.name}}</h3>
+            {{item}}
+        {% endfor %}
+    </div>
+
+    <br>
+    <div class = "container">
+    <button class="btn btn-primary" type="submit" name = "save-btn">Save</button>
+    </div>
+</form>
+{% endblock %}

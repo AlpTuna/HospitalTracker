@@ -1,5 +1,3 @@
-from logging import PlaceHolder
-import re
 from django import forms
 
 class CreatePatient(forms.Form):

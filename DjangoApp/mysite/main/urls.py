@@ -12,5 +12,7 @@ urlpatterns = [
     path("view_record/<int:id>",views.viewRecord,name="viewRecord"),
     path("delete_record/<int:id>",views.deleteRecord,name = "deleteRecord"),
     path("test_vals/<int:id>",views.deleteRecord,name = "test_vals"),
-    path('my-test/', views.mytestview, name='test-view')
+    path('my-test/', views.mytestview, name='test-view'),
+    path('insert_tests/<str:type>/<int:id>',views.InsertTestResults,name="InserTestResults"),
+    path('view_tests/<str:type>/<int:id>',views.viewTestResults,name="viewTests")
 ]
