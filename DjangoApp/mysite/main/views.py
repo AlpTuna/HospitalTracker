@@ -3,6 +3,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse,HttpResponseRedirect
 from .models import Patient,Record
 from .forms import CreatePatient,CreateTests,SelectTests,CreateRecord
+from .encryption_util import encrypt,decrypt
 from .scripts import checkIfUserAvailable,getLastRecord,saveRecord,orderPatients,CreateInsertTestForm,UpdateTests
 
 # allTests is an array that stores all types of tests in arrays. In each array the first element is the name of the test and
@@ -17,11 +18,16 @@ def index(response):
     return render(response,"main/index.html")
 
 def home(response,id):
-    p = Patient.objects.get(id = id)
+    decrypted_id = decrypt(id)
+    p = Patient.objects.get(id = decrypted_id)
     records = p.record_set.all()[::-1]
-    lastRec = p.record_set.last()
     p_attr = p.get_attr()
-    return render(response,"main/home.html",{"p_attr":p_attr,"patient":p,"lastRec":lastRec,"records":records})
+    p_id_enc = encrypt(decrypted_id) #I'm creating a diferent encryption for different operations
+    records_attr = []
+    for record in records:
+        records_attr.append({"enc_id":encrypt(record.id),"date":record.date,"reason":record.reason})
+    print(records_attr)
+    return render(response,"main/home.html",{"p_attr":p_attr,"patient":p,"records":records_attr,"p_id_enc":p_id_enc})
 
 def newPatient(response):
     if response.method == "POST":
@@ -42,6 +48,8 @@ def newPatient(response):
 
 def newRecord(response,id):
     if response.method == "POST":
+        dec_id = decrypt(id)
+        print(dec_id)
         form = CreateRecord(response.POST)
         print(form.is_valid())
         if (form.is_valid()):
@@ -49,10 +57,10 @@ def newRecord(response,id):
             if values["lab"] == False and values["radiology"] == False: #If no test is required, we will save right away.
                 print(values)
                 saveRecord(values,id)
-                return redirect(f"/home/{id}")
+                return redirect(f"/home/{encrypt(dec_id)}")
             else:
                 return render(response,"main/select_tests.html",{"rad":values["radiology"],"lab":values["lab"],
-                "labTests":labTests,"radioTests":radioTests,"id":id,"patient":Patient.objects.get(id = id),
+                "labTests":labTests,"radioTests":radioTests,"id_enc":dec_id,"patient":Patient.objects.get(id = dec_id),
                 "vals":json.dumps(values)})
     else:
         form = CreateRecord()
@@ -73,16 +81,22 @@ def mytestview(response):
         else:
             print("Unknown test!")
     id = response.POST.get("id")
+    print(id)
     saveRecord(allVals,id)
-    return redirect(f"/home/{id}")
+    return redirect(f"/home/{encrypt(id)}")
     
 def allPatients(response):
     allPatients = Patient.objects.all()[::-1] # Retrieve all the patients (in reverse order)
     allPatients = orderPatients(allPatients) # Sort the patients by their last appointment date
-    lastRecords = [getLastRecord(x.id) for x in allPatients]
-    allVals = zip(allPatients,lastRecords)
-    orderPatients(allPatients)
-    return render(response,"main/allPatients.html",{"patients":allVals})
+    all_p = []
+    # I could also use a dict but it can become more complex to pass dict to HTML. Therefore, I'm using array instead.
+    for index,p in enumerate(allPatients):
+        last_rec = getLastRecord(p.id)
+        all_p.append({"encrypted_id": encrypt(p.id),"name":p.name,"gender":p.gender,"age":p.age,"reason":"","last_rec_date":""})
+        if last_rec != None:#If patient has a record, we're gonna add its values
+            all_p[index]["reason"] = last_rec.reason
+            all_p[index]["last_rec_date"] = last_rec.date
+    return render(response,"main/allPatients.html",{"patients":all_p})
 
 
 def filterPatients(response,name):
@@ -94,37 +108,46 @@ def filterPatients(response,name):
     return render(response,"main/allPatients.html",{"patients":allVals})
 
 def viewRecord(response,id):
-    record = Record.objects.get(id = id)
+    dec_id = decrypt(id)
+    record = Record.objects.get(id = dec_id)
     record_attr = record.get_attr()
-    n_lab = len(record.tests["lab"])-1 # We have -1 because of the element 'verified' in the dict. 
-    n_radio = len(record.tests["radiology"])-1 
+    lab_tests = ','.join([x for x in record.tests["lab"] if x != "verified"])
+    radio_tests = ','.join([x for x in record.tests["radiology"] if x != "verified"])
+    n_lab = len(record.tests["lab"])-1
+    n_radio = len(record.tests["radiology"])-1
     return render(response,"main/view_record.html",{"rec_id":id,"n_lab":n_lab,"n_radio":n_radio,"tests": record.tests,
+                "radio_tests":radio_tests,
+                "lab_tests":lab_tests,
                 "attr": record_attr,"lab_verified":record.tests["lab"]["verified"],
                 "radio_verified":record.tests["radiology"]["verified"]})
 
 def InsertTestResults(response,id,type):
+    dec_id = decrypt(id)
     if response.method == "GET":
         print(type)
-        record = Record.objects.get(id = id)
+        record = Record.objects.get(id = dec_id)
         print(record.tests)
         tests = [x for x in record.tests[type] if x != "verified"]
         form = CreateInsertTestForm(tests,allTests[type])
-        return render(response,"main/insert_tests.html",{"rec_id":id,"type":type,"form":form})
+        return render(response,"main/insert_tests.html",{"rec_id":encrypt(dec_id),"type":type,"form":form})
     if response.method == "POST":
         values = response.POST.dict()
         values.pop('csrfmiddlewaretoken')
         values.pop('save-btn') #We dont need the CSRF and the button (name='save-btn') when assigning values
         print(values)
-        UpdateTests(id,type,values)
+        UpdateTests(dec_id,type,values)
         return render(response,"main/index.html")
 
 def viewTestResults(response,id,type):
-    record = Record.objects.get(id = id)
-    tests = {x:record.tests[type][x] for x in record.tests[type] if x != "verified"}#Get the tests (in dict.) excluding 'verified'
+    dec_id = decrypt(id)
+    record = Record.objects.get(id = dec_id)
+    tests = {x:[record.tests[type][x],allTests[type][x]] for x in record.tests[type] if x != "verified"}#Get the tests (in dict.) excluding 'verified'
+    print(tests)
     return render(response,"main/view_tests.html",{"tests":tests})
 
 def deleteRecord(response,id):
-    record = Record.objects.get(id = id)
+    dec_id = decrypt(id)
+    record = Record.objects.get(id = dec_id)
     patientID = record.patient.id
     record.delete()
-    return redirect(f"/home/{patientID}")
+    return redirect(f"/home/{encrypt(patientID)}")

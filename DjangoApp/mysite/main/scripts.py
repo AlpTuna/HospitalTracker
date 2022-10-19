@@ -34,7 +34,7 @@ def CreateInsertTestForm(testsArray,allTests):
         if testType == "int":
             field[test] = forms.IntegerField()
         elif testType == "file":
-            field[test] = forms.FileField()
+            field[test] = forms.ImageField()
     return type("tests",(forms.BaseForm,),{"base_fields":field})
 
 def UpdateTests(rec_id,type,values):
@@ -47,7 +47,7 @@ def UpdateTests(rec_id,type,values):
     
 
 def orderPatients(all):
-# This function uses the selection sort which has a O(n^2) complexity.I'll keep this during the development stage, however I can
+# This function uses the selection sort which has a O(n^2) complexity. I'll keep this during the development stage, however I can
 # switch to a more efficient algorithm in the future.
     p_with_rec = []
     p_wo_rec = []

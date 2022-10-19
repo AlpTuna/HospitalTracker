@@ -95,7 +95,7 @@
         $.ajax({
         url: '/my-test/',
         type: 'POST',
-        data: {csrfmiddlewaretoken: '{{ csrf_token }}',id: '{{id}}' , patient: '{{patient}}',
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}',id: '{{id_enc}}' , patient: '{{patient}}',
           tests : JSON.stringify(listArray),values: (JSON.stringify("{{vals}}")).replace(/&quot;/ig,'"')},
         success: function(data) {
             alert("Created the record!");

@@ -17,7 +17,11 @@
     {% for parameter,value in tests.items %}
       <tr>
         <td>{{parameter}}</td>
-        <td>{{value}}</td>
+        {% if value.1 != 'file' %}
+        <td>{{value.0}}</td>
+        {% else %}
+        <td><img src = {{value.0}} class="img-fluid" alt="Responsive image"></td>
+        {% endif %}
       </tr>
     {% endfor %}
     </tbody>

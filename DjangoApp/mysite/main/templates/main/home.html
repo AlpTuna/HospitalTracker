@@ -29,7 +29,7 @@
   {% for record in records %}
         <div class="card">
           <div class="card-header" align = "center">
-            <a href = "/view_record/{{record.id}}">{{record.date}} ({{record.reason}})</a>
+            <a href = "/view_record/{{record.enc_id}}">{{record.date}} ({{record.reason}})</a>
           </div>
         </div><br>
     {% endfor %}
@@ -37,7 +37,7 @@
 </div>
 
 <div align = "center">
-  <a href="/new_record/{{patient.id}}" aria-pressed="true" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Create new record</a>
+  <a href="/new_record/{{p_id_enc}}" aria-pressed="true" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Create new record</a>
 </div>
 
 {% endblock %}

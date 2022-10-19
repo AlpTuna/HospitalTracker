@@ -7,19 +7,20 @@
 <div align = "center">
 <div class="list-group col-5" align = "left">
     <ul>
-        {% for patient,record in patients %}
+        {% for patient in patients %}
         {% if patient.gender == "Male" %}
-        <a href="/home/{{patient.id}}" class="list-group-item list-group-item-action list-group-item-primary flex-column align-items-start">
+        <a href="/home/{{patient.encrypted_id}}" class="list-group-item list-group-item-action list-group-item-primary flex-column align-items-start">
         {% elif patient.gender == "Female" %}
-        <a href="/home/{{patient.id}}" class="list-group-item list-group-item-action list-group-item-danger flex-column align-items-start">
+        <a href="/home/{{patient.encrypted_id}}" class="list-group-item list-group-item-action list-group-item-danger flex-column align-items-start">
         {% endif %}
             <div class="d-flex w-100 justify-content-between">
               <h5 class="mb-1">{{patient.name}}</h5>
-              <small>Last: {{ record.date|timesince }} ago</small>
+              <small>Last: {{ patient.last_rec_date|timesince }} ago</small>
             </div>
             
-            <p class="mb-1">Last: {{record.reason}}</p>
+            <p class="mb-1">Last: {{patient.reason}}</p>
             <small>The patient is {{patient.age}} years old.</small>
+       
           </a>
           <br>
         {% endfor %}
