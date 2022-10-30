@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf.urls.static import static
+from django.conf import settings
 from . import views
 
 urlpatterns = [
@@ -13,6 +15,8 @@ urlpatterns = [
     path("delete_record/<str:id>",views.deleteRecord,name = "deleteRecord"),
     path("test_vals/<int:id>",views.deleteRecord,name = "test_vals"),
     path('my-test/', views.mytestview, name='test-view'),
-    path('insert_tests/<str:type>/<str:id>',views.InsertTestResults,name="InserTestResults"),
-    path('view_tests/<str:type>/<str:id>',views.viewTestResults,name="viewTests")
-]
+    path('insert_tests/<str:category>/<str:id>',views.InsertTestResults,name="InserTestResults"),
+    path('view_tests/<str:category>/<str:id>',views.viewTestResults,name="viewTests")
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

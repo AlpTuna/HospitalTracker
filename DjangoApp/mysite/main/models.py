@@ -32,3 +32,9 @@ class Record(models.Model):
     def get_attr(self):
         return {"date":self.date,"reason": self.reason,"description":self.description,"diagnosis":self.diagnosis,
         "notes":self.notes,"tests":self.tests}
+
+class ImageModel(models.Model):
+    title = models.CharField(max_length = 200)
+    img = models.ImageField()
+    def get_attr(self):
+        return {"img":self.img,"title":self.title}

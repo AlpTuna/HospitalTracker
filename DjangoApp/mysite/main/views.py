@@ -26,7 +26,6 @@ def home(response,id):
     records_attr = []
     for record in records:
         records_attr.append({"enc_id":encrypt(record.id),"date":record.date,"reason":record.reason})
-    print(records_attr)
     return render(response,"main/home.html",{"p_attr":p_attr,"patient":p,"records":records_attr,"p_id_enc":p_id_enc})
 
 def newPatient(response):
@@ -121,27 +120,33 @@ def viewRecord(response,id):
                 "attr": record_attr,"lab_verified":record.tests["lab"]["verified"],
                 "radio_verified":record.tests["radiology"]["verified"]})
 
-def InsertTestResults(response,id,type):
+def InsertTestResults(response,id,category):
     dec_id = decrypt(id)
     if response.method == "GET":
-        print(type)
         record = Record.objects.get(id = dec_id)
-        print(record.tests)
-        tests = [x for x in record.tests[type] if x != "verified"]
-        form = CreateInsertTestForm(tests,allTests[type])
-        return render(response,"main/insert_tests.html",{"rec_id":encrypt(dec_id),"type":type,"form":form})
+        tests = [x for x in record.tests[category] if x != "verified"]
+        form = CreateInsertTestForm(tests,allTests[category])
+        return render(response,"main/insert_tests.html",{"rec_id":encrypt(dec_id),"type":category,"form":form})
     if response.method == "POST":
-        values = response.POST.dict()
-        values.pop('csrfmiddlewaretoken')
-        values.pop('save-btn') #We dont need the CSRF and the button (name='save-btn') when assigning values
-        print(values)
-        UpdateTests(dec_id,type,values)
+        if category == "lab":
+            values = response.POST.dict()
+            values.pop('csrfmiddlewaretoken')
+            values.pop('save-btn') #We dont need the CSRF and the button (name='save-btn') when assigning values
+        else:
+            values = response.FILES.dict()
+            for x in values:
+                print(x)
+        print(type(values),values)
+        UpdateTests(dec_id,category,values)
         return render(response,"main/index.html")
 
-def viewTestResults(response,id,type):
+def viewTestResults(response,id,category):
     dec_id = decrypt(id)
     record = Record.objects.get(id = dec_id)
-    tests = {x:[record.tests[type][x],allTests[type][x]] for x in record.tests[type] if x != "verified"}#Get the tests (in dict.) excluding 'verified'
+    tests = {x:[record.tests[category][x],allTests[category][x]] for x in record.tests[category] if x != "verified"}#Get the tests (in dict.) excluding 'verified'
+    for x in tests:
+        if tests[x][1] == "file":
+            tests[x][0] = json.loads(tests[x][0])[0] #dict containing model, id, fields
     print(tests)
     return render(response,"main/view_tests.html",{"tests":tests})
 

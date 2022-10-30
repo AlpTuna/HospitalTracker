@@ -3,6 +3,9 @@
 {% block title %}View Tests{% endblock %}
 
 {% block content %}
+
+{% load static %} 
+
 <br>
 <div class = "container">
 <h3>Test Results</h3>
@@ -20,7 +23,11 @@
         {% if value.1 != 'file' %}
         <td>{{value.0}}</td>
         {% else %}
-        <td><img src = {{value.0}} class="img-fluid" alt="Responsive image"></td>
+        <td>
+          {% get_media_prefix as media_prefix %}
+          <img src = {{media_prefix}}{{value.0.fields.img}} class="img-fluid" alt="Responsive image">
+          <p>Will show {{value.0.fields.img}}<p>
+        </td>
         {% endif %}
       </tr>
     {% endfor %}

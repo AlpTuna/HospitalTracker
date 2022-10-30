@@ -1,5 +1,7 @@
-from .models import Patient,Record
-from django import forms
+import os
+from .models import Patient,Record,ImageModel
+from django.core import serializers
+from django import forms 
 import datetime
 
 def checkIfUserAvailable(name):
@@ -39,9 +41,18 @@ def CreateInsertTestForm(testsArray,allTests):
 
 def UpdateTests(rec_id,type,values):
     record = Record.objects.get(id=rec_id)
-    for x in values:
-        record.tests[type][x] = values[x]
+    print(type)
+    if type == "lab":
+        for x in values:
+            record.tests[type][x] = values[x]
+    else:
+        for x in values:
+            img = ImageModel.objects.create(title = values[x].name, img = values[x])
+            serialized_obj = serializers.serialize('json', [ img ]) #Serializes the image model so that it can be saved inside the record
+            img.save()
+            record.tests[type][x] = serialized_obj
     record.tests[type]["verified"] = True
+    print(record.get_attr())
     record.save()
     print(record.tests)
     
