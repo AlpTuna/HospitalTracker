@@ -4,63 +4,112 @@
 
 {% block content %}
 
-<form action="/new_patient/" method="POST">
-    {% csrf_token %}
-    <h3 align = "center">Create a new Patient</h3>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card" style="height: auto;">
+                <div class="card-header" style="background-color: #3b3b3b; color: #fff; padding: 5px;">
+                    <h3 class="text-center">Create a new Patient</h3>
+                </div>
+                <div class="card-body">
+                    <form action="/new_patient/" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group row">
+                            <label for="name" class="col-sm-3 col-form-label">Full Name</label>
+                            <div class="col-sm-9">
+                                {{ form.name }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="birthday" class="col-sm-3 col-form-label">Birthday</label>
+                            <div class="col-sm-9">
+                                {{ form.birthday }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="gender" class="col-sm-3 col-form-label">Gender</label>
+                            <div class="col-sm-9">
+                                {{ form.gender }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="habits" class="col-sm-3 col-form-label">Habits</label>
+                            <div class="col-sm-9">
+                                {{ form.habits }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="medicines" class="col-sm-3 col-form-label">Medicines</label>
+                            <div class="col-sm-9">
+                                {{ form.medicines }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="allergies" class="col-sm-3 col-form-label">Allergies</label>
+                            <div class="col-sm-9">
+                                {{ form.allergies }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="blood" class="col-sm-3 col-form-label">Blood Group (Optional)</label>
+                            <div class="col-sm-9">
+                                {{ form.blood }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="history" class="col-sm-3 col-form-label">History</label>
+                            <div class="col-sm-15">
+                                {{ form.history }}
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-12 text-center">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#modalID" type="submit" name="save" style="background-color: #3b3b3b; border: none;">Create</button>
+                            </div>
+                        </div>
+                    </form>
+                    <br>
+                    {% if type == "error" %}
+                    <div class="alert alert-danger" role="alert">
+                        There has been an error.
+                    </div>
+                    {% elif type == "success" %}
+                    <div class="alert alert-success" role="alert">
+                        Successfully created the patient
+                    </div>
+                    {% elif type == "sameName" %}
+                    <div class="alert alert-warning" role="alert">
+                        The patient exists. You can see the patient's other appointments.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <div class="form-group">
-        <label for = "name" class="col-1"> Full Name</label>
-        {{form.name}}
-    </div>
-    
-    <div class="form-group">
-        <label for = "age" class="col-1">Age</label>
-        {{form.age}}
-    </div>
-    
-    <div class="form-group">
-        <label for = "gender" class="col-1">Gender</label>
-        {{form.gender}}
-    </div>
+<style>
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
-    <div class="form-group">
-        <label for = "habits" class="col-1">Habits</label>
-        {{form.habits}}
-    </div>
+    .card-header {
+        background-color: #000;
+        color: #fff;
+        text-align: center;
+        padding: 10px;
+    }
 
-    <div class="form-group">
-        <label for = "medicines" class="col-1">Medicines</label>
-        {{form.medicines}}
-    </div>
+    .btn-primary {
+        background-color: #000;
+        border: none;
+    }
 
-    <div class="form-group">
-        <label for = "allergies" class="col-1">Allergies</label>
-        {{form.allergies}}
-    </div>
-
-    <div class="form-group">
-        <label for = "allergies" class="col-1">Blood Group (Optional)</label>
-        {{form.blood}}
-    </div>
-
-    <div class="form-group">
-        <label for = "history" class="col-1">History</label>
-        {{form.history}}
-    </div>
-
-    <button class="btn btn-primary" type = "submit" name = "save">Create</button>
-    
-    <br><br>
-    {% if type == "error" %}
-    <div class="alert alert-danger" role="alert">
-        There is another patient with the same name.
-    </div>
-    {% elif type == "success" %}
-    <div class="alert alert-success" role="alert">
-        Successfully created the patient
-      </div>
-    {% endif %}
-
-</form>
+    .btn-primary:hover {
+        background-color: #fdfdfd;
+    }
+</style>
 
 {% endblock %}

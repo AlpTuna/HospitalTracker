@@ -4,9 +4,15 @@
 {% block content %}
 <br>
 
+<style>
+  #test-summary{
+    background-color: #b3b3b3;
+  }
+</style>
+
 <div align="center">
 <h3>
-    View Appointment
+    Appointment Details
 </h3><br>
 <table class="table table-hover col-8">
     <thead>
@@ -33,12 +39,19 @@
           No lab test conducted!
           {% else %}
           {% if lab_verified == True %}
-          # of lab tests: {{n_lab}}   <a href = "/view_tests/lab/{{rec_id}}">See tests</a>
+          # of lab tests: {{n_lab}}   <a class="badge badge-primary" href = "/view_tests/lab/{{rec_id}}">See tests</a>
           {% else %}
-          # of lab tests: {{n_lab}}   <a href = "/insert_tests/lab/{{rec_id}}">Insert Results</a>
+          {% if is_lab_dr %}
+          # of lab tests: {{n_lab}}   <a class="badge badge-success" href = "/insert_tests/lab/{{rec_id}}">Insert Results</a>
+          {% else %}
+          # of lab tests: {{n_lab}} <a class="badge badge-warning">Waiting for the results</a>
+          {% endif %}
+
           {% endif %}
           {% endif %}
-          <p>Tests: {{lab_tests}}</p>
+          <div>
+            <small id = "test-summary">Tests: {{lab_tests}}</small>
+          </div>
         </div>
 
         <div>
@@ -46,23 +59,31 @@
           No radiology test conducted!
           {% else %}
           {% if radio_verified == True %}
-          # of radiology tests: {{n_radio}}   <a href = "/view_tests/radiology/{{rec_id}}">See tests</a>
+          # of radiology tests: {{n_radio}}   <a class="badge badge-primary" href = "/view_tests/radiology/{{rec_id}}">See tests</a>
           {% else %}
-          # of radiology tests: {{n_radio}}   <a href = "/insert_tests/radiology/{{rec_id}}">Insert Results</a>
+          {% if is_lab_dr %}
+          # of radiology tests: {{n_radio}}   <a class="badge badge-success" href = "/insert_tests/radiology/{{rec_id}}">Insert Results</a>
+          {% else %}
+          # of lab tests: {{n_radio}} <a class="badge badge-warning">Waiting for the results</a>
           {% endif %}
           {% endif %}
-          <p>Tests: {{radio_tests}}</p>
+          {% endif %}
+          <div>
+            <small id = "test-summary">Tests: {{radio_tests}}</small>
+          </div>
         </div>
 
         </td>
       </tr>
     </tbody>
-  </table>
-<div>
 
-<div align = "left">
+  </table>
+  <div>
     <a href="/delete_record/{{rec_id}}" aria-pressed="true" class="btn btn-danger btn-lg active" role="button"
      aria-pressed="true">Delete record</a>
-  </div>
+</div>
+<div>
+
+
 
 {% endblock %}

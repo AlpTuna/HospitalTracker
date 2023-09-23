@@ -4,6 +4,20 @@
 
 {% block content %}
 <br>
+<h4 align = "center">{{count}} patients found</h4>
+
+<div align = "center">
+  <a class="btn btn-secondary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    Show filters
+  </a>
+  <div class="collapse" id="collapseExample">
+    <div class="card card-body col-2">
+      <input type="date" id="date-picker" name="trip-start">    
+    </div>
+  </div>
+</div>
+
+<br>
 <div align = "center">
 <div class="list-group col-5" align = "left">
     <ul>
@@ -27,5 +41,11 @@
     </ul>
 </div>
 </div>
+
+<script>
+  var datePicker = document.getElementById("date-picker");
+  var utc = new Date().toISOString().slice(0, 10);
+  datePicker.value = utc; 
+</script>
 
 {% endblock %}

@@ -1,6 +1,7 @@
-import os
-from .models import Patient,Record,ImageModel
+from .models import Patient,Record,ImageModel,User
+from .encryption_util import encrypt,decrypt
 from django.core import serializers
+from .models import User,DailyPatients
 from django import forms 
 import datetime
 
@@ -12,21 +13,31 @@ def checkIfUserAvailable(name):
 def getLastRecord(id):
     return Patient.objects.get(id=id).record_set.last() 
 
-def saveRecord(values,id):
+def saveRecord(values,id,user):
     patient = Patient.objects.get(id = id)
-    new_rec = Record(reason = values["reason"],date = datetime.datetime.now(), patient = patient,
+    new_rec = Record(reason = values["reason"],date = datetime.datetime.now(), patient = patient,ref_dr_id = None,doctor_id=user.id,
     tests = {"radiology":{"verified":False},"lab":{"verified":False}}, description = values["description"],diagnosis = values["diagnosis"],notes = values["notes"])
+    if values["dr_name"] != "None":
+        new_rec.ref_dr_id = values["dr_name"]
     for x in values["radioTests"]:
         new_rec.tests["radiology"][x] = "Not Set!"
     for x in values["labTests"]:
         new_rec.tests["lab"][x] = "Not Set!"
-    if len(values["labTests"]) == 0 and len(values["radioTests"] == 0):
+    if len(values["labTests"]) == 0 and len(values["radioTests"]) == 0:
         new_rec.verified = True
     else:
         new_rec.verified = False
 
     new_rec.save()
     patient.record_set.add(new_rec)
+
+    todays_record = DailyPatients.objects.filter(day = datetime.datetime.today(),doctor=user).first()
+    if todays_record:
+        todays_record.amount +=1
+        todays_record.save()
+    else:
+        todays_record = DailyPatients.objects.create(doctor=user,day=datetime.datetime.today(),amount=1)
+        todays_record.save()
     return new_rec
 
 def CreateInsertTestForm(testsArray,allTests):
@@ -60,6 +71,9 @@ def UpdateTests(rec_id,type,values):
 def orderPatients(all):
 # This function uses the selection sort which has a O(n^2) complexity. I'll keep this during the development stage, however I can
 # switch to a more efficient algorithm in the future.
+
+    # TO-DO: THIS FUNCTION DOESN'T WORK WITH AN ARRAY OF SIZE 1. FIX THAT !!!
+
     p_with_rec = []
     p_wo_rec = []
     for x in all: # Seperate patients with a record from the ones who don't
@@ -76,3 +90,28 @@ def orderPatients(all):
                 big_Index = i_val
         p_with_rec[o_val] , p_with_rec[big_Index] = p_with_rec[big_Index] , p_with_rec[o_val]
     return p_with_rec + p_wo_rec
+
+def login_script(values):
+    #Return values   0 : Success - 1 : Incorrect Name - 2 : Incorrect Password
+    if(len(User.objects.filter(username = values["name"])) == 0): #Another model with the same name
+        return 1
+    else:
+        user = User.objects.filter(username = values["name"])[0]
+        print(user)
+    if(decrypt(user.password) != values["password"]):
+        pass
+        #return 2
+    else:
+        return user
+
+def register(values):
+    if values["password"] != values["password_conf"]: #Passwords not matching
+        return 0
+    if(len(User.objects.filter(username = values["username"]))>0): #Another model with the same name
+        return 0
+    if(len(values["password"])<=3): #If the password is shorter than or equal to 3 char. 
+        return 0
+
+    User.objects.create_user(username = values["username"],password=values["password"],email=values["email"],specialization = values["specialization"])    
+    
+    return 1

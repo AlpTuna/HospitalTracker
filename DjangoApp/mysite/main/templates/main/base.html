@@ -14,7 +14,7 @@
           
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
-
+                {% if user.is_authenticated %}
                 <li class="nav-item active">
                   <a class="nav-link" href="/all_patients/">All Patients <span class="sr-only">(current)</span></a>
                 </li>
@@ -23,8 +23,44 @@
                   <a class="nav-link" href="/new_patient/">New Patient <span class="sr-only">(current)</span></a>
                 </li>
 
+                <li class="nav-item active">
+                  <a class="nav-link" data-toggle="modal" data-target="#exampleModal">
+                      Logout<span class="sr-only">(current)</span>
+                  </a>
+                </li>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Logging Off</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Do you want to log off the system?
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger" onclick = logout()>Logout</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% else %}
+
+                <li class="nav-item active">
+                  <a class="nav-link" href="/register">Register <span class="sr-only">(current)</span></a>
+                </li>
+
+                <li class="nav-item active">
+                  <a class="nav-link" href="/login">Login <span class="sr-only">(current)</span></a>
+                </li>
+
+                {% endif %}
               </ul>
-              
+
               <form class="form-inline my-2 my-lg-0" action="javascript:getInput()">
                 <input id = "searchBar" class="form-control mr-sm-2" type="search" placeholder="Search a patient" aria-label="Search">
                 <button class="btn btn-outline-success my-2 my-sm-0">Search</button>
@@ -41,7 +77,10 @@
           function getInput(){ 
             var inputTextValue = "";
             inputTextValue = document.getElementById("searchBar").value;
-            window.location.href = "/search=" + inputTextValue;
+            window.location.href = "/all_patients/?name=" + inputTextValue;
+        }
+        function logout(){
+          window.location.href = "/logout";
         }
         </script>
 

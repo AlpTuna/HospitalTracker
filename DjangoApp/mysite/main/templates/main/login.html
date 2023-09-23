@@ -1,0 +1,42 @@
+{% extends "main/base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<style>
+    #login-form{
+        padding-top: 8%;
+    }
+</style>
+
+<form id = "login-form" align = "center" class = "container" action = "/login/" method="POST">
+    <h1>Login</h1><br>
+    {% csrf_token %}
+    <div class="form-group">
+        <h5 for = "name">Full Name</h5>
+        {{form.name}}
+    </div>
+
+    <div class="form-group">
+        <h5 for = "password">Password</h5>
+        {{form.password}}
+    </div>
+
+    <br>
+    <button class="btn btn-primary" type = "submit" name = "save">Submit</button>
+    <br><br>
+    <p>Dont have an account? <a href = "/register/">Create one now!</a></p>
+
+</form>
+{% if result != 0 %}
+<div align = "center" class="alert alert-danger" role="alert">
+    {% if result == 1 %}
+    Couldn't find a matching name
+    {% endif %}
+    {% if result == 2 %}
+    Incorrect password
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

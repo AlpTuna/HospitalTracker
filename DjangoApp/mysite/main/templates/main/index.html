@@ -2,9 +2,119 @@
 
 {% block title %}Index{% endblock %}
 {% block content %}
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
 <div align = "center">
-    <h1>Alp Tuna</h1>
-    <h2>You are currently viewing the index page</h2>
+    <br>
+    <div class = "container">
+        <h1>Welcome back {{user.username}}!</h1>
+        <h2>{{user.specialization}}</h2>
+        
+    </div>
+    
 </div>
 
+<div>
+    <h3>Total Referations: {{ref_count}}</h3>
+    <h3>Appointments Today: {{apps_today}}</h3>
+    <h3>Notifications: {{notification_count}}</h3>
+</div>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#notificationsModal">
+    See Notifications
+</button>
+
+<div class="modal fade" id="notificationsModal" tabindex="-1" role="dialog" aria-labelledby="notificationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Notifications</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id = "modal-body" class="modal-body">
+                {% if notification_count != 0 %}
+                <ul id = "notificationsList">
+                    {% for notification in notifications %}
+                    <li id = {{notification.id}}>[{{notification.timestamp}}] {{notification.text}} <button onclick="singleDelete('{{notification.id}}')">Delete</button></li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                You don't have notifications.
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button id = "deleteAllButton" type="button" class="btn btn-danger">Delete All</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+<canvas id="chart" width="600" height="300"></canvas>
+
+<script>
+    let ctx = document.getElementById("chart").getContext("2d");
+    let labs = "{{last_days}}".replace(/&#x27;/g,'"').replace(/"/g,'').replace('[','').replace(']','').replace(' ','').split(",");
+    let data_arr = "{{last_vals}}".replace(/&#x27;/g,'"').replace('[','').replace(']','').split(", ");
+    console.log(labs);
+    console.log(data_arr);
+
+
+    let chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: labs,
+            datasets: [
+                {
+                    label: "Appointments",
+                    backgroundColor: "#79AEC8",
+                    borderColor: "#417690",
+                    data:  data_arr
+                }
+            ]
+        },
+        options: {
+            title: {
+                text: "Appointments in the last 7 days",
+                display: true
+            },
+            responsive: false
+        }
+    });
+</script>
+
+
+<script>
+    function singleDelete(id){
+        console.log("Deleting ",id);
+        $.ajax({
+        url: '/delete_notifications/',
+        type: 'POST',
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}', notifications : id},
+        failure: function(data) { 
+            alert("Something went wrong.");
+      }
+        });
+        document.getElementById(id).remove();
+    }
+
+    $(document).ready(function(){
+      $('#deleteAllButton').click(function(){
+        $.ajax({
+        url: '/delete_notifications/',
+        type: 'POST',
+        data: {csrfmiddlewaretoken: '{{ csrf_token }}', notifications : "{{notif_ids}}"},
+        failure: function(data) { 
+            alert("Something went wrong.");
+      }
+        });
+        document.getElementById("notificationsList").remove();
+        document.getElementById("modal-body").innerHTML = "You don't have notifications."; 
+      });
+    });
+</script>
 {% endblock %}
