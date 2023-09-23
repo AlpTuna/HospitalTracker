@@ -51,3 +51,19 @@ This Django Medical Records Management System is a web application designed to h
 
    - Receive notifications for new test orders.
    - Insert test results and notify the referring doctor.
+  
+# Images
+* ![New Patients](https://github.com/AlpTuna/HospitalTracker/assets/67372150/1f69dc3b-bdfe-4ad1-af64-2ba7fc97a422)
+* ![The patient exists](https://github.com/AlpTuna/HospitalTracker/assets/67372150/a253f549-8583-4e45-98b7-789594e0178d)
+* ![Patient Tab](https://github.com/AlpTuna/HospitalTracker/assets/67372150/7b8d2ae2-40af-4e5b-960d-5a24fafe9fb0)
+* ![New Record](https://github.com/AlpTuna/HospitalTracker/assets/67372150/aec4127f-0d98-44f3-8f4e-7e8b03f78ed9)
+* ![Tests Summary ](https://github.com/AlpTuna/HospitalTracker/assets/67372150/ea2f4561-ea58-4a74-8a5a-8a1f01b76f73)
+* ![Appointment Details 1](https://github.com/AlpTuna/HospitalTracker/assets/67372150/651fad8d-c49a-4178-8930-d014bb9c9b9a)
+* ![Appointment Details 2](https://github.com/AlpTuna/HospitalTracker/assets/67372150/66197a5f-0a5f-40c8-853f-d2c83d7b067c)
+   **Note:
+      This page is only for the laboratory specialists since only the laboratory specialists are authorized to upload test results.
+* ![Appointment Details 3](https://github.com/AlpTuna/HospitalTracker/assets/67372150/3fa8c0ee-8029-41ec-a559-21276e6e2b1e)
+* ![Notifications Tab 2](https://github.com/AlpTuna/HospitalTracker/assets/67372150/5bade4db-8c52-49d3-a528-a3d8f17bcef6)
+* ![Notifications Tab](https://github.com/AlpTuna/HospitalTracker/assets/67372150/29a38fe1-56dd-41c9-911c-4c6fb2fc2799)
+* ![Test Result 1](https://github.com/AlpTuna/HospitalTracker/assets/67372150/a063e0b6-cad8-4385-bdac-73fe86bffd29)
+* ![Test Result 2](https://github.com/AlpTuna/HospitalTracker/assets/67372150/11fb9642-963a-40ee-bc58-d7d15f8067a8)
