@@ -35,6 +35,8 @@ This Django Medical Records Management System is a web application designed to h
    - Doctors can manage their patient list, view patient details, and access medical records.
    - Patient records are organized, making it easy to track patient history.
 
+8. ***New*** **Predict Pneumonia**
+   - Doctors can now get a prediction on the X-Ray images of the patients based on a Deep Learning model trained with Tensorflow
 ## Usage
 
 1. Visit the landing page and register for a new account or log in with your credentials.
