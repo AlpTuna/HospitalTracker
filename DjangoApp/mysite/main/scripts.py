@@ -3,12 +3,38 @@ from .encryption_util import encrypt,decrypt
 from django.core import serializers
 from .models import User,DailyPatients
 from django import forms 
+import tensorflow
 import datetime
+import numpy as np
+import os
+import cv2
 
 def checkIfUserAvailable(name):
     allNames = [x.name for x in Patient.objects.all()]
     print(allNames)
     return not name in allNames
+
+def GetPrediction(directory):
+    # INPUT : Name of the image
+    # OUTPUT: Result of the prediction (Or None if the model cannot be loaded)
+    if os.path.exists('main/trained_model.h5'):
+        model = tensorflow.keras.models.load_model('main/trained_model.h5') 
+        filename2 = "media/" + directory
+        #It's important to add main' bcs. OS starts searching from the outer directory
+    
+        image_size = 250
+        categories = ['NORMAL','PNEUMONIA']
+
+        image_array2 = cv2.imread(filename2,cv2.IMREAD_GRAYSCALE)
+        new_array2 = cv2.resize(image_array2,(image_size,image_size))
+        new_array2 = new_array2.reshape(-1,image_size,image_size,1)
+        prediction = model.predict([new_array2])
+        result = categories[int(prediction[0][0])]
+
+        return result
+    else:
+        print("Couldn't find trained_model.h5")
+        return None
 
 def getLastRecord(id):
     return Patient.objects.get(id=id).record_set.last() 

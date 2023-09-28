@@ -25,8 +25,31 @@
         {% else %}
         <td>
           {% get_media_prefix as media_prefix %}
-          <img src = {{media_prefix}}{{value.0.fields.img}} class="img-fluid" alt="Responsive image">
+          <img id = "testImage{{parameter}}" name = {{value.0.fields.img}} src = {{media_prefix}}{{value.0.fields.img}} class="img-fluid" alt="Responsive image">
           <p>Showing {{value.0.fields.img}}<p>
+          {% if parameter == "X-Ray" %}
+          <button data-toggle="modal" data-target="#predictModal" class="btn btn-primary" id="predict-button">Scan With AI <span>Beta</span></button>
+
+          <div class="modal fade" id="predictModal" tabindex="-1" aria-labelledby="predictModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title fs-2" id="predictModalLabel">Disclaimer</h3>
+                  <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id = "modal-text" class="modal-body">
+                  Please be aware that this feature is currently in its beta testing phase. The results it provides are not intended as definitive diagnoses. By choosing to use the 'Predict' function, you acknowledge your understanding of this important distinction and agree not to base any medical or diagnostic decisions solely on these results.
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button type="button" id="predictButton" onclick = "predictClick()" class="btn btn-primary">Predict</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% endif %}
+
         </td>
         {% endif %}
       </tr>
@@ -34,4 +57,107 @@
     </tbody>
 </table>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+<script>
+  function predictClick(){
+    name = document.getElementById("testImageX-Ray").name
+    document.getElementById("modal-text").innerHTML = "<div class='lds-ellipsis'><div></div><div></div><div></div><div></div></div>";
+    fetch('/predict_xray/' + name + "/")
+      .then((response) => response.text()) // converts the response to JSON
+      .then(data => {
+        result = data;
+        document.getElementById("modal-text").innerHTML = '<div>'+result+'</div>';
+      });
+      
+    }
+
+</script>
+
+<style>
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #000000;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+
+
+#predict-button {
+    background-color: #3498db;
+    color: #fff;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#predict-button span {
+    display: inline-block; /* Make the span a block element */
+    padding: 5px 10px;
+    background-color: #ffd93f;
+    border-radius: 2px; 
+    font-size: 13px;
+}
+
+#predict-button:hover {
+    background-color: #2980b9;
+}
+
+#predict-button:active {
+    background-color: #217dbb;
+}
+</style>
 {% endblock %}

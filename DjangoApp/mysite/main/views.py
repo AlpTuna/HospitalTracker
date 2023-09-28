@@ -1,12 +1,13 @@
 import json
 from django.shortcuts import render,redirect
+from django.http import HttpResponse
 from django.core import serializers
 from django.contrib.auth import login,authenticate,logout
 from .models import Patient,Record,User,Notification,DailyPatients
 from .forms import CreatePatient,CreateRecord,RegistrationForm,LoginForm
 import datetime
 from .encryption_util import encrypt,decrypt
-from .scripts import register,checkIfUserAvailable,getLastRecord,saveRecord,orderPatients,CreateInsertTestForm,UpdateTests,login_script
+from .scripts import register,checkIfUserAvailable,getLastRecord,saveRecord,orderPatients,CreateInsertTestForm,UpdateTests,login_script, GetPrediction
 
 # allTests is an array that stores all types of tests in arrays. In each array the first element is the name of the test and
 # second element is the type of value it gets.
@@ -33,6 +34,10 @@ def index(response):
         "notifications":notifs,"notif_ids":[x.id for x in notifs],"apps_today":app_count,
         "last_vals":last_vals,"last_days":last_vals_titles})
     return render(response,"main/landing_page.html")
+
+def getXRayPrediction(request,path):
+    print(GetPrediction(path))
+    return HttpResponse(GetPrediction(path))
 
 def home(response,id):
     decrypted_id = decrypt(id)

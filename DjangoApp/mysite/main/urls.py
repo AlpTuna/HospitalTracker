@@ -19,7 +19,8 @@ urlpatterns = [
     path('register/',views.register_request,name="register"),
     path('login/',views.login_request,name="login"),
     path('logout/',views.logout_request,name="logout"),
-    path('delete_notifications/',views.deleteNotifications,name="deleteNotifications")
+    path('delete_notifications/',views.deleteNotifications,name="deleteNotifications"),
+    path('predict_xray/<str:path>/',views.getXRayPrediction,name="xRayPredict")
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
